@@ -16,7 +16,7 @@
     "@scs/core": "workspace:*",
     "@scs/database": "workspace:*",
     "@scs/github": "workspace:*",
-    "bullmq": "^5.58.5",
+    "bullmq": "^6.2.0",
     "ioredis": "^5.7.0",
     "tar": "^7.4.3"
   },
