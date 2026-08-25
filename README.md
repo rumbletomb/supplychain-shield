@@ -184,4 +184,3 @@ synthetic vulnerable examples should be committed.
 ## License
 
 MIT © 2026 SupplyChain Shield contributors.
-

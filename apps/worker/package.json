@@ -1,0 +1,27 @@
+{
+  "name": "@scs/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/worker.ts",
+    "start": "node dist/worker.js",
+    "demo": "tsx src/demo.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@scs/contracts": "workspace:*",
+    "@scs/core": "workspace:*",
+    "@scs/database": "workspace:*",
+    "@scs/github": "workspace:*",
+    "bullmq": "^5.58.5",
+    "ioredis": "^5.7.0",
+    "tar": "^7.4.3"
+  },
+  "devDependencies": {
+    "@types/tar": "^6.1.13",
+    "tsx": "^4.20.5"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@scs/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test --test-isolation=none test/*.test.mjs"
+  },
+  "dependencies": {
+    "@scs/contracts": "workspace:*",
+    "fast-glob": "^3.3.3",
+    "yaml": "^2.8.1"
+  }
+}

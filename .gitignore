@@ -1,0 +1,15 @@
+node_modules/
+.turbo/
+.next/
+dist/
+*.tsbuildinfo
+coverage/
+.env
+.env.local
+*.log
+*.pem
+*.key
+.DS_Store
+tmp/
+artifacts/
+packages/database/prisma/dev.db

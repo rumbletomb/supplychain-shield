@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ScanStatus {
+  QUEUED
+  RUNNING
+  PASSED
+  WARNED
+  FAILED
+  ERRORED
+  CANCELLED
+}
+
+enum Severity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  INFO
+}
+
+model Organization {
+  id             String           @id @default(cuid())
+  githubLogin    String           @unique
+  displayName    String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  installations Installation[]
+  repositories   Repository[]
+  auditEvents    AuditEvent[]
+}
+
+model Installation {
+  id             String       @id @default(cuid())
+  githubId       BigInt       @unique
+  organizationId String
+  suspendedAt    DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  repositories   Repository[]
+}
+
+model Repository {
+  id             String        @id @default(cuid())
+  githubId       BigInt        @unique
+  owner          String
+  name           String
+  fullName       String        @unique
+  defaultBranch  String        @default("main")
+  private        Boolean       @default(false)
+  active         Boolean       @default(true)
+  organizationId String
+  installationId String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  installation   Installation? @relation(fields: [installationId], references: [id], onDelete: SetNull)
+  policy         Policy?
+  scans          Scan[]
+
+  @@index([organizationId])
+}
+
+model Policy {
+  id                   String     @id @default(cuid())
+  repositoryId         String     @unique
+  version              Int        @default(1)
+  blockAt              Severity   @default(HIGH)
+  warnAt               Severity   @default(MEDIUM)
+  blockVerifiedSecrets Boolean    @default(true)
+  deniedLicenses       String[]
+  ignoredRules         String[]
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  repository           Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+}
+
+model Scan {
+  id             String        @id @default(cuid())
+  repositoryId   String
+  pullRequest    Int?
+  commitSha      String
+  ref            String?
+  status         ScanStatus    @default(QUEUED)
+  source         String        @default("github")
+  checkRunId     BigInt?
+  durationMs     Int?
+  errorMessage   String?
+  summary        Json?
+  sbom           Json?
+  startedAt      DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  repository     Repository    @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  findings       Finding[]
+  artifacts      Artifact[]
+
+  @@index([repositoryId, createdAt(sort: Desc)])
+  @@index([status])
+}
+
+model Finding {
+  id               String      @id @default(cuid())
+  scanId           String
+  fingerprint      String
+  ruleId           String
+  engine           String
+  category         String
+  severity         Severity
+  title            String
+  description      String      @db.Text
+  remediation      String      @db.Text
+  path             String?
+  startLine        Int?
+  packageName      String?
+  installedVersion String?
+  fixedVersion     String?
+  advisoryUrl      String?
+  metadata         Json?
+  createdAt        DateTime    @default(now())
+  scan             Scan        @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  exceptions       Exception[]
+
+  @@unique([scanId, fingerprint])
+  @@index([fingerprint])
+  @@index([severity])
+}
+
+model Exception {
+  id          String   @id @default(cuid())
+  findingId   String
+  reason      String
+  approvedBy  String
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  finding     Finding  @relation(fields: [findingId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+}
+
+model Artifact {
+  id          String   @id @default(cuid())
+  scanId      String
+  format      String
+  contentType String
+  storageKey  String
+  sha256      String
+  createdAt   DateTime @default(now())
+  scan        Scan     @relation(fields: [scanId], references: [id], onDelete: Cascade)
+}
+
+model AuditEvent {
+  id             String        @id @default(cuid())
+  organizationId String
+  actor          String
+  action         String
+  target         String
+  metadata       Json?
+  createdAt      DateTime      @default(now())
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt(sort: Desc)])
+}
