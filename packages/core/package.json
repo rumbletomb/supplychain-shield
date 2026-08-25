@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --test --test-isolation=none test/*.test.mjs"
+    "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
     "@scs/contracts": "workspace:*",
@@ -18,3 +18,4 @@
     "yaml": "^2.8.1"
   }
 }
+
