@@ -21,9 +21,9 @@
     "demo:scan": "pnpm --filter @scs/worker demo"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.2",
-    "@types/node": "^22.18.0",
-    "turbo": "^2.5.6",
-    "typescript": "^5.9.2"
+    "@biomejs/biome": "^2.5.12",
+    "@types/node": "^26.4.1",
+    "turbo": "^2.10.12",
+    "typescript": "^7.0.2"
   }
 }
