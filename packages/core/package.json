@@ -15,6 +15,6 @@
   "dependencies": {
     "@scs/contracts": "workspace:*",
     "fast-glob": "^3.3.3",
-    "yaml": "^2.8.1"
+    "yaml": "^2.9.1"
   }
 }
